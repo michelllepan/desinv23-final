@@ -16,10 +16,14 @@ const CLOUD2_SIZE = 400;
 
 // define camera feed, hand position, and object variables
 let capture;
+let handsfree;
 let handPos, oldHandPos;
 let sun, cloud1, cloud2;
 
-function setup () {
+import {Sun, Cloud1, Cloud2} from "./grabbable.js";
+// import {Handsfree} from "https://unpkg.com/handsfree@8.4.2/build/lib/handsfree.js";
+
+window.setup = function () {
   createCanvas(windowWidth, windowHeight);
 	
 	// create video capture
@@ -28,14 +32,14 @@ function setup () {
 	capture.hide();
   
 	// initialize Handsfree library to detect one hand
-  handsfree = new Handsfree({
-    showDebug: true,
-    hands: {
-			enabled: true,
-			maxNumHands: 1,
-			minDetectionConfidence: 0.7,
-		}
-  })
+  	handsfree = new Handsfree({
+		showDebug: true,
+		hands: {
+				enabled: true,
+				maxNumHands: 1,
+				minDetectionConfidence: 0.7,
+			}
+	})
 	
 	// initalize grab gesture
 	handsfree.useGesture({
@@ -59,13 +63,14 @@ function setup () {
 	oldHandPos = createVector(0, 0);
 	
 	// initialize object positions
+	// TODO: transform coordinates before making objects
 	sun = new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, SUN_SPEED, 1/2 * SUN_SIZE);
 	cloud1 = new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, CLOUD1_SPEED, 1/2 * CLOUD1_SIZE);
 	cloud2 = new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, CLOUD2_SPEED, 1/2 * CLOUD2_SIZE);
 }
 
 
-function draw () {
+window.draw = function () {
   background(0);
 	
 	// flip video feed horizontally so user sees a mirror image, and position at the center of the screen
@@ -79,75 +84,14 @@ function draw () {
 
 	// check if hand is grabbing and update object positions
 	const isGrab = oldHandPos ? detectGesture("grab") : false;
-	sun.updatePos(isGrab);
-	cloud1.updatePos(isGrab);
-	cloud2.updatePos(isGrab);
+	sun.updatePos(isGrab, handPos, oldHandPos);
+	cloud1.updatePos(isGrab, handPos, oldHandPos);
+	cloud2.updatePos(isGrab, handPos, oldHandPos);
 	
 	// draw objects
 	sun.draw();
 	cloud1.draw();
 	cloud2.draw();
-}
-
-
-// a general class for grabbable objects
-class Grabbable {
-	
-	constructor(x, y, speed, radius) {
-		this.pos = makePos(x, y);
-		this.speed = speed;
-		this.radius = radius;
-	}
-	
-	updatePos(isGrab) {
-		if (isGrab && handPos.dist(this.pos) < this.radius) {
-			// if hand is grabbing and intersecting the object, 
-			// move object in the direction of hand movement
-			const dHandPos = p5.Vector.sub(handPos, oldHandPos);
-			this.pos.add(dHandPos);
-		} else {
-			// move object horizontally at specified speed
-			this.pos.x += this.speed;
-			if (this.pos.x > windowWidth + PADDING) this.pos.x = -PADDING;
-			if (this.pos.x < -PADDING) this.pos.x = windowWidth + PADDING;
-		}
-	}
-}
-
-
-class Sun extends Grabbable {
-	draw () {
-		fill("rgb(255,219,21)");
-		stroke("rgb(255,161,22)");
-		strokeWeight(10);
-		circle(this.pos.x, this.pos.y, 2 * this.radius);
-	}
-}
-
-
-class Cloud1 extends Grabbable {
-	draw () {
-		fill(255);
-		strokeWeight(0);
-		circle(this.pos.x, this.pos.y, this.radius);
-		circle(this.pos.x - 30, this.pos.y - 30, this.radius);
-		circle(this.pos.x + 30, this.pos.y - 10, this.radius);
-		circle(this.pos.x - 50, this.pos.y + 20, this.radius);
-		circle(this.pos.x + 10, this.pos.y + 20, this.radius);
-	}
-}
-
-
-class Cloud2 extends Grabbable {
-	draw () {
-		fill(230);
-		strokeWeight(0);
-		circle(this.pos.x, this.pos.y, this.radius);
-		circle(this.pos.x - 50, this.pos.y - 50, this.radius);
-		circle(this.pos.x + 40, this.pos.y - 20, this.radius * 4/5);
-		circle(this.pos.x - 30, this.pos.y + 20, this.radius);
-		circle(this.pos.x + 40, this.pos.y + 40, this.radius * 2/3);
-	}
 }
 
 
