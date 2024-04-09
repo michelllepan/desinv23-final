@@ -17,7 +17,7 @@ const CLOUD2_SIZE = 400;
 let capture;
 let handsfree;
 let handPos, oldHandPos;
-let sun, cloud1, cloud2;
+let objects = [];
 
 import {Sun, Cloud1, Cloud2} from "./modules/grabbable.js";
 
@@ -33,11 +33,11 @@ window.setup = function () {
   	handsfree = new Handsfree({
 		showDebug: true,
 		hands: {
-				enabled: true,
-				maxNumHands: 1,
-				minDetectionConfidence: 0.7,
-			}
-	})
+			enabled: true,
+			maxNumHands: 1,
+			minDetectionConfidence: 0.7,
+		}
+	});
 	
 	// initalize grab gesture
 	handsfree.useGesture({
@@ -52,7 +52,7 @@ window.setup = function () {
 			["addCurl", "Ring", "FullCurl", 0.9],
 			["addCurl", "Pinky", "FullCurl", 0.9],
 		],
-		"enabled": true
+		"enabled": true,
 	})
 	handsfree.start();
 	
@@ -62,9 +62,9 @@ window.setup = function () {
 	
 	// initialize object positions
 	// TODO: transform coordinates before making objects
-	sun = new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, SUN_SPEED, 1/2 * SUN_SIZE);
-	cloud1 = new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, CLOUD1_SPEED, 1/2 * CLOUD1_SIZE);
-	cloud2 = new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, CLOUD2_SPEED, 1/2 * CLOUD2_SIZE);
+	objects.push(new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, SUN_SPEED, 1/2 * SUN_SIZE));
+	objects.push(new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, CLOUD1_SPEED, 1/2 * CLOUD1_SIZE));
+	objects.push(new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, CLOUD2_SPEED, 1/2 * CLOUD2_SIZE));
 }
 
 
@@ -82,14 +82,12 @@ window.draw = function () {
 
 	// check if hand is grabbing and update object positions
 	const isGrab = oldHandPos ? detectGesture("grab") : false;
-	sun.updatePos(isGrab, handPos, oldHandPos);
-	cloud1.updatePos(isGrab, handPos, oldHandPos);
-	cloud2.updatePos(isGrab, handPos, oldHandPos);
-	
-	// draw objects
-	sun.draw();
-	cloud1.draw();
-	cloud2.draw();
+
+	// update positions and draw objects
+	for (let object of objects) {
+		object.updatePos(isGrab, handPos, oldHandPos);
+		object.draw();
+	}
 }
 
 
@@ -100,12 +98,12 @@ function getHandPos () {
 	// landmark #21 is the center of the hand
 	// reference: https://handsfreejs.netlify.app/ref/model/hands.html#data
 	const center = hands.landmarks.find(hand => hand[21]);
-  if (center) {
+  	if (center) {
 		return makePos(
 			center[21].x * CAP_WIDTH,
 			center[21].y * CAP_HEIGHT,
 		);
-  }
+  	}
 }
 
 
