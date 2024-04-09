@@ -1,6 +1,5 @@
 const CAP_WIDTH = 1200;					// capture video width
 const CAP_HEIGHT = 900;					// capture video height
-const PADDING = 100;						// padding at edges of screen
 
 // define sun attributes
 const SUN_SPEED = 0.4;
@@ -20,8 +19,7 @@ let handsfree;
 let handPos, oldHandPos;
 let sun, cloud1, cloud2;
 
-import {Sun, Cloud1, Cloud2} from "./grabbable.js";
-// import {Handsfree} from "https://unpkg.com/handsfree@8.4.2/build/lib/handsfree.js";
+import {Sun, Cloud1, Cloud2} from "./modules/grabbable.js";
 
 window.setup = function () {
   createCanvas(windowWidth, windowHeight);

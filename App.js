@@ -34,17 +34,6 @@ router.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "/"));
 });
 
-//depending on what url extension the user navigates to, send them the respective html file. 
-app.get('/a', function (req, res) {
-    res.sendFile(publicPath + '/a.html');
-});
-app.get('/b', function (req, res) {
-    res.sendFile(publicPath + '/b.html');
-});
-app.get('/c', function (req, res) {
-    res.sendFile(publicPath + '/c.html');
-});
-
 
 //run this server by entering "node App.js" using your command line. 
    app.listen(port, () => {
