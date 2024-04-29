@@ -1,3 +1,5 @@
+import {Sun, Cloud1, Cloud2} from "./modules/grabbable.js";
+
 const CAP_WIDTH = 1200;					// capture video width
 const CAP_HEIGHT = 900;					// capture video height
 
@@ -17,12 +19,11 @@ const CLOUD2_SIZE = 400;
 let capture;
 let handsfree;
 let handPos, oldHandPos;
+let imgHandOpen, imgHandClosed;
 let objects = [];
 
-import {Sun, Cloud1, Cloud2} from "./modules/grabbable.js";
-
 window.setup = function () {
-  createCanvas(windowWidth, windowHeight);
+  	createCanvas(windowWidth, windowHeight);
 	
 	// create video capture
 	capture = createCapture(VIDEO);
@@ -59,6 +60,9 @@ window.setup = function () {
 	// initialize hand postions
 	handPos = createVector(0, 0);
 	oldHandPos = createVector(0, 0);
+
+	imgHandOpen = loadImage("./assets/hand_open.svg");
+	imgHandClosed = loadImage("./assets/hand_closed.svg");
 	
 	// initialize object positions
 	// TODO: transform coordinates before making objects
@@ -69,7 +73,7 @@ window.setup = function () {
 
 
 window.draw = function () {
-  background(0);
+  	background(0);
 	
 	// flip video feed horizontally so user sees a mirror image, and position at the center of the screen
 	scale(-1, 1);
@@ -88,6 +92,13 @@ window.draw = function () {
 		object.updatePos(isGrab, handPos, oldHandPos);
 		object.draw();
 	}
+
+	if (isGrab) {
+		image(imgHandClosed, handPos.x - 100, handPos.y - 100, 200, 200);
+	} else if (handPos) {
+		image(imgHandOpen, handPos.x - 100, handPos.y - 100, 200, 200);
+	}
+	
 }
 
 
