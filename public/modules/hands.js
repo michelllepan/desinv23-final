@@ -8,17 +8,8 @@ export class Hands {
         this.handsfree.useGesture(poke);
         this.handsfree.start();
 
-        this.leftCenter = null;
-	    this.leftCenterOld = null;
-        this.leftPoint = null;
-        this.leftPointOld = null;
-        this.leftGesture = null;
-
-        this.rightCenter = null;
-	    this.rightCenterOld = null;
-        this.leftPoint = null;
-        this.leftPointOld = null;
-        this.rightGesture = null;
+        this.left = new Hand();
+        this.right = new Hand();
 
         this.convertPos = convertPos;
     }
@@ -26,23 +17,42 @@ export class Hands {
     update() {
         const hands = this.handsfree.data?.hands;
         if (!hands?.landmarks) return;
-        
-        // update positions
-        this.leftCenterOld = this.leftCenter;
-        this.leftCenter = this.convertPos(hands.landmarks[0][21]);
 
-        this.leftPointOld = this.leftPoint;
-        this.leftPoint = this.convertPos(hands.landmarks[0][8]);
+        this.left.update(
+            this.convertPos(hands.landmarks[0][21]),
+            this.convertPos(hands.landmarks[0][8])
+        );
+        this.left.gesture = hands.gesture[0]?.name;
 
-        this.rightCenterOld = this.rightCenter;
-        this.rightCenter = this.convertPos(hands.landmarks[1][21]);
+        this.right.update(
+            this.convertPos(hands.landmarks[1][21]),
+            this.convertPos(hands.landmarks[1][8])
+        );
+        this.right.gesture = hands.gesture[1]?.name;
+    }
 
-        this.rightPointOld = this.rightPoint;
-        this.rightPoint = this.convertPos(hands.landmarks[1][8]);
+    draw(getHandImage) {
+        this.left.draw(getHandImage);
+        this.right.draw(getHandImage);
+    }
+}
 
-        // detect gestures
-        if (!hands?.gesture) return;
-        this.leftGesture = hands.gesture[0]?.name;
-        this.rightGesture = hands.gesture[1]?.name;
+class Hand {
+    constructor() {
+        this.center = this.oldCenter = null;
+        this.point = this.oldPoint = null;
+        this.gesture = "";
+    }
+
+    update(center, point) {
+        this.oldCenter = this.center;
+        this.center = center;
+        this.oldPoint = this.point;
+        this.point = point;
+    }
+
+    draw(getHandImage) {
+        if (!this.center) return;
+        image(getHandImage(this.gesture), this.center.x - 100, this.center.y - 100, 200, 200);
     }
 }

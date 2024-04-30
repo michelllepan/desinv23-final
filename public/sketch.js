@@ -61,21 +61,16 @@ window.draw = function() {
 	scale(-1, 1);
 	image(capture, -windowWidth/2 - CAP_WIDTH/2, windowHeight/2 - CAP_HEIGHT/2, CAP_WIDTH, CAP_HEIGHT);
 	scale(-1, 1);
-	
-	// update hand position
+
 	hands.update();
 
 	for (let object of objects) {
-		object.updatePos(hands.leftGesture === "grab", hands.leftCenter, hands.leftCenterOld);
-		object.updatePos(hands.rightGesture === "grab", hands.rightCenter, hands.rightCenterOld);
+		object.updatePos(hands.left);
+		object.updatePos(hands.right);
 		object.draw();
 	}
 
-	// draw hands
-	if (hands.leftCenter)
-		image(getHandImage(hands.leftGesture), hands.leftCenter.x - 100, hands.leftCenter.y - 100, 200, 200);
-	if (hands.rightCenter)
-		image(getHandImage(hands.rightGesture), hands.rightCenter.x - 100, hands.rightCenter.y - 100, 200, 200);
+	hands.draw(getHandImage);
 }
 
 function getHandImage(gesture) {
@@ -84,14 +79,6 @@ function getHandImage(gesture) {
 		case "poke": return imgHandPoint;
 		default: return imgHandOpen;
 	} 
-}
-
-function makePos(x, y) {
-	// transform coordinates in the capture space to the window space
-	return createVector(
-		-x + windowWidth/2 + CAP_WIDTH/2,
-		y + windowHeight/2 - CAP_HEIGHT/2,
-	);
 }
 
 function convertHandPos(pos) {

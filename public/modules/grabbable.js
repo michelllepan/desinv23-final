@@ -8,19 +8,35 @@ export class Grabbable {
 		this.speed = speed;
 		this.radius = radius;
 	}
-	
-	updatePos(isGrab, handPos, oldHandPos) {
-		if (handPos && oldHandPos && isGrab && handPos.dist(this.pos) < this.radius) {
-			// if hand is grabbing and intersecting the object, 
-			// move object in the direction of hand movement
-			const dHandPos = p5.Vector.sub(handPos, oldHandPos);
-			this.pos.add(dHandPos);
-		} else {
-			// move object horizontally at specified speed
-			this.pos.x += this.speed;
-			if (this.pos.x > windowWidth + PADDING) this.pos.x = -PADDING;
-			if (this.pos.x < -PADDING) this.pos.x = windowWidth + PADDING;
+
+	updatePos(hand) {
+		if (hand.gesture == "grab") {
+			const grabbed = this.maybeGrab(hand.center, hand.oldCenter);
+			if (grabbed) return;
 		}
+
+		if (hand.gesture == "poke") {
+			const poked = this.maybePoke(hand.point, hand.oldPoint);
+			if (poked) return;
+		}
+
+		this.pos.x += this.speed;
+		if (this.pos.x > windowWidth + PADDING) this.pos.x = -PADDING;
+		if (this.pos.x < -PADDING) this.pos.x = windowWidth + PADDING;
+	}
+
+	maybeGrab(newPos, oldPos) {
+		if (!newPos || !oldPos) return;
+
+		if (newPos.dist(this.pos) < this.radius) {
+			const dHandPos = p5.Vector.sub(newPos, oldPos);
+			this.pos.add(dHandPos);
+			return true;
+		} 
+	}
+
+	maybePoke(newPos, oldPos) {
+		if (!newPos || !oldPos) return;
 	}
 }
 
