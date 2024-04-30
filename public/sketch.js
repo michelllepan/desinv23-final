@@ -19,7 +19,7 @@ const CLOUD2_SIZE = 400;
 // define camera feed, hand position, and object variables
 let capture;
 let handsfree, hands;
-let imgHandOpen, imgHandClosed, imgHandPoint, imgHandPinch;
+let images;
 let objects = [];
 
 window.setup = function() {
@@ -47,11 +47,20 @@ window.setup = function() {
 	});
 	hands = new Hands(handsfree, convertHandPos);
 
-	// TODO: load different images for left hand
-	imgHandOpen = loadImage("./assets/hand_open.svg");
-	imgHandClosed = loadImage("./assets/hand_closed.svg");
-	imgHandPoint = loadImage("./assets/hand_point.svg");
-	imgHandPinch = loadImage("./assets/hand_pinch.svg");
+	images = {
+		"left": {
+			"open": loadImage("./assets/hand_open_left.svg"),
+			"grab": loadImage("./assets/hand_closed_left.svg"),
+			"poke": loadImage("./assets/hand_point_left.svg"),
+			"pinch": loadImage("./assets/hand_pinch.svg")
+		},
+		"right": {
+			"open": loadImage("./assets/hand_open_right.svg"),
+			"grab": loadImage("./assets/hand_closed_right.svg"),
+			"poke": loadImage("./assets/hand_point_right.svg"),
+			"pinch": loadImage("./assets/hand_pinch.svg")
+		}
+	}
 
 	// initialize object positions
 	// TODO: transform coordinates before making objects
@@ -80,13 +89,8 @@ window.draw = function() {
 	hands.draw(getHandImage);
 }
 
-function getHandImage(gesture) {
-	switch (gesture) {
-		case "grab": return imgHandClosed;
-		case "poke": return imgHandPoint;
-		case "pinch": return imgHandPinch;
-		default: return imgHandOpen;
-	} 
+function getHandImage(label, gesture) {
+	return images[label][gesture];
 }
 
 function convertHandPos(pos) {

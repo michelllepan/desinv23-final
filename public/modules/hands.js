@@ -8,8 +8,8 @@ export class Hands {
         this.handsfree.useGesture(poke);
         this.handsfree.start();
 
-        this.left = new Hand();
-        this.right = new Hand();
+        this.left = new Hand("left");
+        this.right = new Hand("right");
 
         this.convertPos = convertPos;
     }
@@ -40,7 +40,8 @@ export class Hands {
 }
 
 class Hand {
-    constructor() {
+    constructor(label) {
+        this.label = label
         this.center = this.oldCenter = null;
         this.point = this.oldPoint = null;
         this.pinch = this.oldPinch = null;
@@ -62,12 +63,12 @@ class Hand {
         } else if (pinchState == "held") {
             this.gesture = "pinch";
         } else {
-            this.gesture = "";
+            this.gesture = "open";
         }
     }
 
     draw(getHandImage) {
         if (!this.center) return;
-        image(getHandImage(this.gesture), this.center.x - 100, this.center.y - 100, 200, 200);
+        image(getHandImage(this.label, this.gesture), this.center.x - 100, this.center.y - 100, 200, 200);
     }
 }
