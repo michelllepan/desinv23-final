@@ -19,7 +19,7 @@ const CLOUD2_SIZE = 400;
 // define camera feed, hand position, and object variables
 let capture;
 let handsfree, hands;
-let imgHandOpen, imgHandClosed;
+let imgHandOpen, imgHandClosed, imgHandPoint;
 let objects = [];
 
 window.setup = function () {
@@ -44,6 +44,7 @@ window.setup = function () {
 	// TODO: load different images for left hand
 	imgHandOpen = loadImage("./assets/hand_open.svg");
 	imgHandClosed = loadImage("./assets/hand_closed.svg");
+	imgHandPoint = loadImage("./assets/hand_point.svg");
 	
 	// initialize object positions
 	// TODO: transform coordinates before making objects
@@ -65,16 +66,24 @@ window.draw = function () {
 	hands.update();
 
 	for (let object of objects) {
-		object.updatePos(hands.leftGesture === "grab", hands.leftPos, hands.leftPosOld);
-		object.updatePos(hands.rightGesture === "grab", hands.rightPos, hands.rightPosOld);
+		object.updatePos(hands.leftGesture === "grab", hands.leftCenter, hands.leftCenterOld);
+		object.updatePos(hands.rightGesture === "grab", hands.rightCenter, hands.rightCenterOld);
 		object.draw();
 	}
 
 	// draw hands
-	if (hands.leftPos)
-		image(hands.leftGesture === "grab" ? imgHandClosed : imgHandOpen, hands.leftPos.x - 100, hands.leftPos.y - 100, 200, 200);
-	if (hands.rightPos)
-		image(hands.rightGesture === "grab" ? imgHandClosed : imgHandOpen, hands.rightPos.x - 100, hands.rightPos.y - 100, 200, 200);
+	if (hands.leftCenter)
+		image(getHandImage(hands.leftGesture), hands.leftCenter.x - 100, hands.leftCenter.y - 100, 200, 200);
+	if (hands.rightCenter)
+		image(getHandImage(hands.rightGesture), hands.rightCenter.x - 100, hands.rightCenter.y - 100, 200, 200);
+}
+
+function getHandImage(gesture) {
+	switch (gesture) {
+		case "grab": return imgHandClosed;
+		case "poke": return imgHandPoint;
+		default: return imgHandOpen;
+	} 
 }
 
 function makePos (x, y) {

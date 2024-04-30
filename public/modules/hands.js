@@ -1,29 +1,23 @@
+import {grab, poke} from "./gestures.js";
+
 export class Hands {
 
     constructor(handsfree, convertPos) {
         this.handsfree = handsfree;
-        this.handsfree.useGesture({
-            "name": "grab",
-            "algorithm": "fingerpose",
-            "models": "hands",
-            "confidence": 5.0,
-            "description": [
-                ["addCurl", "Thumb", "HalfCurl", 0.9],
-                ["addCurl", "Index", "FullCurl", 0.9],
-                ["addCurl", "Middle", "FullCurl", 0.9],
-                ["addCurl", "Ring", "FullCurl", 0.9],
-                ["addCurl", "Pinky", "FullCurl", 0.9],
-            ],
-            "enabled": true,
-        })
+        this.handsfree.useGesture(grab);
+        this.handsfree.useGesture(poke);
         this.handsfree.start();
 
-        this.leftPos = createVector(0, 0);
-	    this.leftPosOld = createVector(0, 0);
+        this.leftCenter = null;
+	    this.leftCenterOld = null;
+        this.leftPoint = null;
+        this.leftPointOld = null;
         this.leftGesture = null;
 
-        this.rightPos = createVector(0, 0);
-	    this.rightPosOld = createVector(0, 0);
+        this.rightCenter = null;
+	    this.rightCenterOld = null;
+        this.leftPoint = null;
+        this.leftPointOld = null;
         this.rightGesture = null;
 
         this.convertPos = convertPos;
@@ -34,11 +28,17 @@ export class Hands {
         if (!hands?.landmarks) return;
         
         // update positions
-        this.leftPosOld = this.leftPos;
-        this.leftPos = this.convertPos(hands.landmarks[0][21]);
+        this.leftCenterOld = this.leftCenter;
+        this.leftCenter = this.convertPos(hands.landmarks[0][21]);
 
-        this.rightPosOld = this.rightPos;
-        this.rightPos = this.convertPos(hands.landmarks[1][21]);
+        this.leftPointOld = this.leftPoint;
+        this.leftPoint = this.convertPos(hands.landmarks[0][8]);
+
+        this.rightCenterOld = this.rightCenter;
+        this.rightCenter = this.convertPos(hands.landmarks[1][21]);
+
+        this.rightPointOld = this.rightPoint;
+        this.rightPoint = this.convertPos(hands.landmarks[1][8]);
 
         // detect gestures
         if (!hands?.gesture) return;
