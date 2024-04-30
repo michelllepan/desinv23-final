@@ -1,4 +1,5 @@
 import {Sun, Cloud1, Cloud2} from "./modules/grabbable.js";
+import {Hands} from "./modules/hands.js";
 
 const CAP_WIDTH = 1200;					// capture video width
 const CAP_HEIGHT = 900;					// capture video height
@@ -17,8 +18,7 @@ const CLOUD2_SIZE = 400;
 
 // define camera feed, hand position, and object variables
 let capture;
-let handsfree;
-let handPos, oldHandPos;
+let handsfree, hands;
 let imgHandOpen, imgHandClosed;
 let objects = [];
 
@@ -35,31 +35,11 @@ window.setup = function () {
 		showDebug: true,
 		hands: {
 			enabled: true,
-			maxNumHands: 1,
+			maxNumHands: 2,
 			minDetectionConfidence: 0.7,
 		}
 	});
-	
-	// initalize grab gesture
-	handsfree.useGesture({
-		"name": "grab",
-		"algorithm": "fingerpose",
-		"models": "hands",
-		"confidence": 5.0,
-		"description": [
-			["addCurl", "Thumb", "HalfCurl", 0.9],
-			["addCurl", "Index", "FullCurl", 0.9],
-			["addCurl", "Middle", "FullCurl", 0.9],
-			["addCurl", "Ring", "FullCurl", 0.9],
-			["addCurl", "Pinky", "FullCurl", 0.9],
-		],
-		"enabled": true,
-	})
-	handsfree.start();
-	
-	// initialize hand postions
-	handPos = createVector(0, 0);
-	oldHandPos = createVector(0, 0);
+	hands = new Hands(handsfree);
 
 	imgHandOpen = loadImage("./assets/hand_open.svg");
 	imgHandClosed = loadImage("./assets/hand_closed.svg");
@@ -81,55 +61,20 @@ window.draw = function () {
 	scale(-1, 1);
 	
 	// update hand position
-	oldHandPos = handPos;
-	handPos = getHandPos();
+	hands.update();
+	const leftHandPos = hands.leftPos ? convertHandPos(hands.leftPos) : null;
+	const rightHandPos = hands.rightPos ? convertHandPos(hands.rightPos) : null;
 
-	// check if hand is grabbing and update object positions
-	const isGrab = oldHandPos ? detectGesture("grab") : false;
+	// for (let object of objects) {
+	// 	object.updatePos(isGrab, handPos, oldHandPos);
+	// 	object.draw();
+	// }
 
-	// update positions and draw objects
-	for (let object of objects) {
-		object.updatePos(isGrab, handPos, oldHandPos);
-		object.draw();
-	}
-
-	if (isGrab) {
-		image(imgHandClosed, handPos.x - 100, handPos.y - 100, 200, 200);
-	} else if (handPos) {
-		image(imgHandOpen, handPos.x - 100, handPos.y - 100, 200, 200);
-	}
-	
-}
-
-
-function getHandPos () {
-	const hands = handsfree.data?.hands;
-	if (!hands?.landmarks) return;
-	
-	// landmark #21 is the center of the hand
-	// reference: https://handsfreejs.netlify.app/ref/model/hands.html#data
-	const center = hands.landmarks.find(hand => hand[21]);
-  	if (center) {
-		return makePos(
-			center[21].x * CAP_WIDTH,
-			center[21].y * CAP_HEIGHT,
-		);
-  	}
-}
-
-
-function detectGesture (name) {
-	const hands = handsfree.data?.hands;
-	if (!hands?.landmarks) return;
-	
-	if (hands?.gesture) {
-		// check if left or right hand is grabbing 
-		if (hands.gesture[0] && hands.gesture[0].name === name) {
-			return true;
-		} else if (hands.gesture[1] && hands.gesture[1].name === name) {
-			return true;
-		}
-	}
+	// draw hands
+	if (leftHandPos)
+		image(hands.leftGrab ? imgHandClosed : imgHandOpen, leftHandPos.x - 100, leftHandPos.y - 100, 200, 200);
+	if (rightHandPos)
+		image(hands.rightGrab ? imgHandClosed : imgHandOpen, rightHandPos.x - 100, rightHandPos.y - 100, 200, 200);
 }
 
 function makePos (x, y) {
@@ -137,5 +82,12 @@ function makePos (x, y) {
 	return createVector(
 		-x + windowWidth/2 + CAP_WIDTH/2,
 		y + windowHeight/2 - CAP_HEIGHT/2,
+	);
+}
+
+function convertHandPos (pos) {
+	return createVector(
+		-pos.x*CAP_WIDTH + windowWidth/2 + CAP_WIDTH/2,
+		pos.y*CAP_HEIGHT + windowHeight/2 - CAP_HEIGHT/2,
 	);
 }
