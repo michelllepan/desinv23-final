@@ -24,9 +24,8 @@ export class Grabbable {
 	}
 }
 
-
 export class Sun extends Grabbable {
-	draw () {
+	draw() {
 		fill("rgb(255,219,21)");
 		stroke("rgb(255,161,22)");
 		strokeWeight(10);
@@ -34,9 +33,8 @@ export class Sun extends Grabbable {
 	}
 }
 
-
 export class Cloud1 extends Grabbable {
-	draw () {
+	draw() {
 		fill(255);
 		strokeWeight(0);
 		circle(this.pos.x, this.pos.y, this.radius);
@@ -47,9 +45,8 @@ export class Cloud1 extends Grabbable {
 	}
 }
 
-
 export class Cloud2 extends Grabbable {
-	draw () {
+	draw() {
 		fill(230);
 		strokeWeight(0);
 		circle(this.pos.x, this.pos.y, this.radius);

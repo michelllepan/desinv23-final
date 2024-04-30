@@ -22,7 +22,7 @@ let handsfree, hands;
 let imgHandOpen, imgHandClosed, imgHandPoint;
 let objects = [];
 
-window.setup = function () {
+window.setup = function() {
   	createCanvas(windowWidth, windowHeight);
 	
 	// create video capture
@@ -54,7 +54,7 @@ window.setup = function () {
 }
 
 
-window.draw = function () {
+window.draw = function() {
   	background(0);
 	
 	// flip video feed horizontally so user sees a mirror image, and position at the center of the screen
@@ -86,7 +86,7 @@ function getHandImage(gesture) {
 	} 
 }
 
-function makePos (x, y) {
+function makePos(x, y) {
 	// transform coordinates in the capture space to the window space
 	return createVector(
 		-x + windowWidth/2 + CAP_WIDTH/2,
@@ -94,7 +94,7 @@ function makePos (x, y) {
 	);
 }
 
-function convertHandPos (pos) {
+function convertHandPos(pos) {
 	if (pos) {
 		return createVector(
 			-pos.x*CAP_WIDTH + windowWidth/2 + CAP_WIDTH/2,

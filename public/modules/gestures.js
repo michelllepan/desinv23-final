@@ -11,7 +11,7 @@ export const grab = {
         ["addCurl", "Pinky", "FullCurl", 0.9],
     ],
     "enabled": true,
-}
+};
 
 export const poke = {
     "name": "poke",
@@ -26,4 +26,4 @@ export const poke = {
         ["addCurl", "Pinky", "FullCurl", 0.9],
     ],
     "enabled": true,
-}
+};

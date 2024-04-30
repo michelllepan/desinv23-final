@@ -45,5 +45,4 @@ export class Hands {
         this.leftGesture = hands.gesture[0]?.name;
         this.rightGesture = hands.gesture[1]?.name;
     }
-
 }
