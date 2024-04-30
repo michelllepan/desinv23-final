@@ -1,8 +1,9 @@
 import {Sun, Cloud1, Cloud2} from "./modules/grabbable.js";
 import {Hands} from "./modules/hands.js";
 
-const CAP_WIDTH = 1200;					// capture video width
-const CAP_HEIGHT = 900;					// capture video height
+// capture size
+const CAP_WIDTH = 1400;
+const CAP_HEIGHT = 1050;
 
 // define sun attributes
 const SUN_SPEED = 0.4;
@@ -41,7 +42,7 @@ window.setup = function() {
 		plugin: {
 			pinchers: {
 				enabled: true,
-				threshold: 30,
+				threshold: 15,
 			}
 		}
 	});

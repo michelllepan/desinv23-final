@@ -1,4 +1,4 @@
-const PADDING = 100;	
+const PADDING = 150;	
 
 // a general class for grabbable objects
 export class Grabbable {
