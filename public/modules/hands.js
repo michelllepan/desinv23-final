@@ -1,6 +1,6 @@
 export class Hands {
 
-    constructor(handsfree) {
+    constructor(handsfree, convertPos) {
         this.handsfree = handsfree;
         this.handsfree.useGesture({
             "name": "grab",
@@ -20,11 +20,13 @@ export class Hands {
 
         this.leftPos = createVector(0, 0);
 	    this.leftPosOld = createVector(0, 0);
-        this.leftGrab = false;
+        this.leftGesture = null;
 
         this.rightPos = createVector(0, 0);
 	    this.rightPosOld = createVector(0, 0);
-        this.rightGrab = false;
+        this.rightGesture = null;
+
+        this.convertPos = convertPos;
     }
 
     update() {
@@ -33,15 +35,15 @@ export class Hands {
         
         // update positions
         this.leftPosOld = this.leftPos;
-        this.leftPos = hands.landmarks[0][21];
+        this.leftPos = this.convertPos(hands.landmarks[0][21]);
 
         this.rightPosOld = this.rightPos;
-        this.rightPos = hands.landmarks[1][21];
+        this.rightPos = this.convertPos(hands.landmarks[1][21]);
 
         // detect gestures
         if (!hands?.gesture) return;
-        this.leftGrab = hands.gesture[0]?.name === "grab";
-        this.rightGrab = hands.gesture[1]?.name === "grab";
+        this.leftGesture = hands.gesture[0]?.name;
+        this.rightGesture = hands.gesture[1]?.name;
     }
 
 }

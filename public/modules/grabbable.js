@@ -10,7 +10,7 @@ export class Grabbable {
 	}
 	
 	updatePos(isGrab, handPos, oldHandPos) {
-		if (isGrab && handPos.dist(this.pos) < this.radius) {
+		if (handPos && oldHandPos && isGrab && handPos.dist(this.pos) < this.radius) {
 			// if hand is grabbing and intersecting the object, 
 			// move object in the direction of hand movement
 			const dHandPos = p5.Vector.sub(handPos, oldHandPos);

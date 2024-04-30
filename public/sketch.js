@@ -39,8 +39,9 @@ window.setup = function () {
 			minDetectionConfidence: 0.7,
 		}
 	});
-	hands = new Hands(handsfree);
+	hands = new Hands(handsfree, convertHandPos);
 
+	// TODO: load different images for left hand
 	imgHandOpen = loadImage("./assets/hand_open.svg");
 	imgHandClosed = loadImage("./assets/hand_closed.svg");
 	
@@ -62,19 +63,18 @@ window.draw = function () {
 	
 	// update hand position
 	hands.update();
-	const leftHandPos = hands.leftPos ? convertHandPos(hands.leftPos) : null;
-	const rightHandPos = hands.rightPos ? convertHandPos(hands.rightPos) : null;
 
-	// for (let object of objects) {
-	// 	object.updatePos(isGrab, handPos, oldHandPos);
-	// 	object.draw();
-	// }
+	for (let object of objects) {
+		object.updatePos(hands.leftGesture === "grab", hands.leftPos, hands.leftPosOld);
+		object.updatePos(hands.rightGesture === "grab", hands.rightPos, hands.rightPosOld);
+		object.draw();
+	}
 
 	// draw hands
-	if (leftHandPos)
-		image(hands.leftGrab ? imgHandClosed : imgHandOpen, leftHandPos.x - 100, leftHandPos.y - 100, 200, 200);
-	if (rightHandPos)
-		image(hands.rightGrab ? imgHandClosed : imgHandOpen, rightHandPos.x - 100, rightHandPos.y - 100, 200, 200);
+	if (hands.leftPos)
+		image(hands.leftGesture === "grab" ? imgHandClosed : imgHandOpen, hands.leftPos.x - 100, hands.leftPos.y - 100, 200, 200);
+	if (hands.rightPos)
+		image(hands.rightGesture === "grab" ? imgHandClosed : imgHandOpen, hands.rightPos.x - 100, hands.rightPos.y - 100, 200, 200);
 }
 
 function makePos (x, y) {
@@ -86,8 +86,12 @@ function makePos (x, y) {
 }
 
 function convertHandPos (pos) {
-	return createVector(
-		-pos.x*CAP_WIDTH + windowWidth/2 + CAP_WIDTH/2,
-		pos.y*CAP_HEIGHT + windowHeight/2 - CAP_HEIGHT/2,
-	);
+	if (pos) {
+		return createVector(
+			-pos.x*CAP_WIDTH + windowWidth/2 + CAP_WIDTH/2,
+			pos.y*CAP_HEIGHT + windowHeight/2 - CAP_HEIGHT/2,
+		);
+	} else {
+		return null;
+	}
 }
