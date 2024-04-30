@@ -19,7 +19,7 @@ const CLOUD2_SIZE = 400;
 // define camera feed, hand position, and object variables
 let capture;
 let handsfree, hands;
-let imgHandOpen, imgHandClosed, imgHandPoint;
+let imgHandOpen, imgHandClosed, imgHandPoint, imgHandPinch;
 let objects = [];
 
 window.setup = function() {
@@ -37,6 +37,12 @@ window.setup = function() {
 			enabled: true,
 			maxNumHands: 2,
 			minDetectionConfidence: 0.7,
+		},
+		plugin: {
+			pinchers: {
+				enabled: true,
+				threshold: 30,
+			}
 		}
 	});
 	hands = new Hands(handsfree, convertHandPos);
@@ -45,12 +51,13 @@ window.setup = function() {
 	imgHandOpen = loadImage("./assets/hand_open.svg");
 	imgHandClosed = loadImage("./assets/hand_closed.svg");
 	imgHandPoint = loadImage("./assets/hand_point.svg");
-	
+	imgHandPinch = loadImage("./assets/hand_pinch.svg");
+
 	// initialize object positions
 	// TODO: transform coordinates before making objects
-	objects.push(new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, createVector(SUN_SPEED, 0), 1/2 * SUN_SIZE));
-	objects.push(new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, createVector(CLOUD1_SPEED, 0), 1/2 * CLOUD1_SIZE));
-	objects.push(new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, createVector(CLOUD2_SPEED, 0), 1/2 * CLOUD2_SIZE));
+	objects.push(new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, createVector(SUN_SPEED, 0), 1/2 * SUN_SIZE, childCallback));
+	objects.push(new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, createVector(CLOUD1_SPEED, 0), 1/2 * CLOUD1_SIZE, childCallback));
+	objects.push(new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, createVector(CLOUD2_SPEED, 0), 1/2 * CLOUD2_SIZE, childCallback));
 }
 
 
@@ -77,6 +84,7 @@ function getHandImage(gesture) {
 	switch (gesture) {
 		case "grab": return imgHandClosed;
 		case "poke": return imgHandPoint;
+		case "pinch": return imgHandPinch;
 		default: return imgHandOpen;
 	} 
 }
@@ -90,4 +98,8 @@ function convertHandPos(pos) {
 	} else {
 		return null;
 	}
+}
+
+function childCallback(child) {
+	objects.push(child);
 }

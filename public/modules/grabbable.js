@@ -3,7 +3,7 @@ const PADDING = 100;
 // a general class for grabbable objects
 export class Grabbable {
 	
-	constructor(x, y, velocity, radius) {
+	constructor(x, y, velocity, radius, childCallback) {
 		this.pos = createVector(x, y);
 		this.velocity = velocity;
 		this.radius = radius;
@@ -11,17 +11,20 @@ export class Grabbable {
 		this.force = null;
 		this.force_length = 0;
 		this.force_time = 0;
+
+		this.childCallback = childCallback;
 	}
 
 	updatePos(hand) {
 		if (hand.gesture == "grab") {
 			const grabbed = this.maybeGrab(hand.center, hand.oldCenter);
 			if (grabbed) return;
-		}
-
-		if (hand.gesture == "poke") {
+		} else if (hand.gesture == "poke") {
 			const poked = this.maybePoke(hand.point, hand.oldPoint);
 			if (poked) return;
+		} else if (hand.gesture == "pinch") {
+			const pinched = this.maybePinch(hand.pinch, hand.oldPinch);
+			if (pinched) return;
 		}
 
 		if (this.force && this.force_time > 0) {
@@ -41,7 +44,6 @@ export class Grabbable {
 
 	maybeGrab(newHandPos, oldHandPos) {
 		if (!newHandPos || !oldHandPos) return;
-
 		if (newHandPos.dist(this.pos) < this.radius) {
 			const dHandPos = p5.Vector.sub(newHandPos, oldHandPos);
 			this.pos.add(dHandPos);
@@ -51,7 +53,6 @@ export class Grabbable {
 
 	maybePoke(newHandPos, oldHandPos) {
 		if (!newHandPos || !oldHandPos) return;
-
 		if (oldHandPos.dist(this.pos) > this.radius &&
 			oldHandPos.dist(this.pos) < this.radius + 15) {
 			if (!this.force) {
@@ -63,6 +64,22 @@ export class Grabbable {
 			return true;
 		} 
 	}
+
+	maybePinch(newHandPos, oldHandPos) {
+		if (!newHandPos || !oldHandPos) return;
+		if (newHandPos.dist(this.pos) < this.radius) {
+			const child = this.makeChild(newHandPos.x, newHandPos.y);
+			if (child) {
+				this.childCallback(child);
+			} else {
+				const dHandPos = p5.Vector.sub(newHandPos, oldHandPos);
+				this.pos.add(dHandPos);
+			}
+			return true;
+		} 
+	}
+
+	makeChild() {}
 }
 
 export class Sun extends Grabbable {
@@ -84,6 +101,10 @@ export class Cloud1 extends Grabbable {
 		circle(this.pos.x - 50, this.pos.y + 20, 1.2 * this.radius);
 		circle(this.pos.x + 10, this.pos.y + 20, 1.2 * this.radius);
 	}
+
+	makeChild(x, y) {
+		return new Cloud3(x, y, p5.Vector.mult(this.velocity, 0.2), this.radius / 2, 255);
+	}
 }
 
 export class Cloud2 extends Grabbable {
@@ -95,5 +116,22 @@ export class Cloud2 extends Grabbable {
 		circle(this.pos.x + 40, this.pos.y - 20, 1.2 * this.radius * 4/5);
 		circle(this.pos.x - 30, this.pos.y + 20, 1.2 * this.radius);
 		circle(this.pos.x + 40, this.pos.y + 40, 1.2 * this.radius * 2/3);
+	}
+
+	makeChild(x, y) {
+		return new Cloud3(x, y, p5.Vector.mult(this.velocity, 0.2), this.radius / 2, 230);
+	}
+}
+
+export class Cloud3 extends Grabbable {
+	constructor(x, y, velocity, radius, color) {
+		super(x, y, velocity, radius, null);
+		this.color = color;
+	}
+
+	draw() {
+		fill(this.color);
+		strokeWeight(0);
+		circle(this.pos.x, this.pos.y, this.radius);
 	}
 }
