@@ -48,9 +48,9 @@ window.setup = function() {
 	
 	// initialize object positions
 	// TODO: transform coordinates before making objects
-	objects.push(new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, SUN_SPEED, 1/2 * SUN_SIZE));
-	objects.push(new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, CLOUD1_SPEED, 1/2 * CLOUD1_SIZE));
-	objects.push(new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, CLOUD2_SPEED, 1/2 * CLOUD2_SIZE));
+	objects.push(new Sun(5/6 * CAP_WIDTH, 1/4 * CAP_HEIGHT, createVector(SUN_SPEED, 0), 1/2 * SUN_SIZE));
+	objects.push(new Cloud1(1/6 * CAP_WIDTH, 1/3 * CAP_HEIGHT, createVector(CLOUD1_SPEED, 0), 1/2 * CLOUD1_SIZE));
+	objects.push(new Cloud2(1/3 * CAP_WIDTH, 5/6 * CAP_HEIGHT, createVector(CLOUD2_SPEED, 0), 1/2 * CLOUD2_SIZE));
 }
 
 
