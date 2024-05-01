@@ -53,13 +53,13 @@ window.setup = function() {
 			"open": loadImage("./assets/hand_open_left.svg"),
 			"grab": loadImage("./assets/hand_closed_left.svg"),
 			"poke": loadImage("./assets/hand_point_left.svg"),
-			"pinch": loadImage("./assets/hand_pinch.svg")
+			"pinch": loadImage("./assets/hand_pinch_left.svg")
 		},
 		"right": {
 			"open": loadImage("./assets/hand_open_right.svg"),
 			"grab": loadImage("./assets/hand_closed_right.svg"),
 			"poke": loadImage("./assets/hand_point_right.svg"),
-			"pinch": loadImage("./assets/hand_pinch.svg")
+			"pinch": loadImage("./assets/hand_pinch_right.svg")
 		}
 	}
 
