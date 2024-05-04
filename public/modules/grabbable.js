@@ -16,6 +16,7 @@ export class Grabbable {
 	}
 
 	updatePos(hand) {
+		// if object is being manipulated by gesture, move accordingly
 		if (hand.gesture == "grab") {
 			const grabbed = this.maybeGrab(hand.center, hand.oldCenter);
 			if (grabbed) return;
@@ -27,6 +28,7 @@ export class Grabbable {
 			if (pinched) return;
 		}
 
+		// if no gesture, apply forces and float along
 		if (this.force && this.force_time > 0) {
 			this.velocity.add(this.force);
 			this.force_time -= 1;
