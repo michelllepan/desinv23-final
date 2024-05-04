@@ -42,7 +42,7 @@ window.setup = function() {
 		plugin: {
 			pinchers: {
 				enabled: true,
-				threshold: 15,
+				threshold: 20,
 			}
 		}
 	});

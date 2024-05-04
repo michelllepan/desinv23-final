@@ -103,7 +103,7 @@ export class Cloud1 extends Grabbable {
 	}
 
 	makeChild(x, y) {
-		return new Cloud3(x, y, p5.Vector.mult(this.velocity, 0.2), this.radius / 2, 255);
+		return new Cloud3(x, y, p5.Vector.mult(this.velocity, 0.5), this.radius / 2, 255);
 	}
 }
 
@@ -119,7 +119,7 @@ export class Cloud2 extends Grabbable {
 	}
 
 	makeChild(x, y) {
-		return new Cloud3(x, y, p5.Vector.mult(this.velocity, 0.2), this.radius / 2, 230);
+		return new Cloud3(x, y, p5.Vector.mult(this.velocity, 0.5), this.radius / 2, 230);
 	}
 }
 
